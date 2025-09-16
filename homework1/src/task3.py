@@ -1,3 +1,4 @@
+# Determine positivity of a number
 def CheckNumber(n):
     if n > 0:
         return "positive"
@@ -6,6 +7,7 @@ def CheckNumber(n):
     else:
         return "zero"
 
+#  Calculates list of the first 10 primes
 def First10Primes():
     primes = []
     num = 2
@@ -15,6 +17,7 @@ def First10Primes():
         num += 1
     return primes
 
+# Sums all numbers from 1 to 100
 def Sum1To100():
     total = 0
     i = 1

@@ -1,3 +1,4 @@
+# Create hello world func and main 
 def hello():
     return "Hello, World!"
 
