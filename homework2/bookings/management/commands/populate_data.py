@@ -1,11 +1,21 @@
 from django.core.management.base import BaseCommand
 from bookings.models import Movie, Seat
+from django.contrib.auth.models import User
 from datetime import date
 
 class Command(BaseCommand):
     help = 'Populate database with sample movies and seats'
 
     def handle(self, *args, **kwargs):
+        # Create a default user if none exists
+        if not User.objects.filter(username='testuser').exists():
+            User.objects.create_user(
+                username='testuser',
+                email='test@example.com',
+                password='testpass123'
+            )
+            self.stdout.write(self.style.SUCCESS('Created test user'))
+        
         # Create movies
         movies_data = [
             {
@@ -31,7 +41,7 @@ class Command(BaseCommand):
         for movie_data in movies_data:
             Movie.objects.get_or_create(**movie_data)
         
-        # Create seats (A1-A10, B1-B10)
+        # Create seats (A1-A10, B1-B10, C1-C10, D1-D10)
         for row in ['A', 'B', 'C', 'D']:
             for num in range(1, 11):
                 seat_number = f"{row}{num}"
