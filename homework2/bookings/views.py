@@ -54,7 +54,15 @@ from django.http import HttpResponseRedirect
 
 def seat_booking(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
-    seats = Seat.objects.all().order_by('seat_number')
+    
+    # Natural sort: A1, A2, ..., A9, A10 instead of A1, A10, A2, ...
+    from django.db.models import CharField, Value
+    from django.db.models.functions import Length, Substr
+    
+    seats = Seat.objects.annotate(
+        row=Substr('seat_number', 1, 1),
+        num=Substr('seat_number', 2)
+    ).order_by('row', Length('num'), 'num')
     
     # Check which seats are already booked for THIS movie
     booked_seat_ids = Booking.objects.filter(movie=movie).values_list('seat_id', flat=True)
