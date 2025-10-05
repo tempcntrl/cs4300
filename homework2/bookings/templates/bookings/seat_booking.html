@@ -1,0 +1,79 @@
+{% extends 'bookings/base.html' %}
+
+{% block title %}Book Seats - {{ movie.title }}{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Book Seats for {{ movie.title }}</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Select Your Seat</h5>
+                <div class="text-center mb-3">
+                    <div class="screen" style="background: #333; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                        SCREEN
+                    </div>
+                </div>
+                
+                <form method="POST" id="bookingForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="user" value="1">
+                    <div class="seats-container text-center">
+                        {% for seat in seats %}
+                            {% if seat.id in booked_seat_ids %}
+                                <div class="seat booked" title="Seat {{ seat.seat_number }} - Booked">
+                                    {{ seat.seat_number }}
+                                </div>
+                            {% else %}
+                                <label>
+                                    <input type="radio" name="seat" value="{{ seat.id }}" style="display:none;" required>
+                                    <div class="seat available" data-seat="{{ seat.seat_number }}">
+                                        {{ seat.seat_number }}
+                                    </div>
+                                </label>
+                            {% endif %}
+                            
+                            {% if forloop.counter|divisibleby:10 %}
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button type="submit" class="btn btn-success btn-lg">Confirm Booking</button>
+                        <a href="{% url 'movie_list' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Movie Details</h5>
+                <p><strong>Title:</strong> {{ movie.title }}</p>
+                <p><strong>Duration:</strong> {{ movie.duration }} minutes</p>
+                <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                <hr>
+                <h6>Legend:</h6>
+                <div><span class="seat available" style="display:inline-block;"></span> Available</div>
+                <div><span class="seat booked" style="display:inline-block;"></span> Booked</div>
+                <div><span class="seat selected" style="display:inline-block;"></span> Selected</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.seat.available').forEach(seat => {
+        seat.addEventListener('click', function() {
+            document.querySelectorAll('.seat.available').forEach(s => s.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+</script>
+{% endblock %}
